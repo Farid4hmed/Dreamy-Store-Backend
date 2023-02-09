@@ -7,6 +7,7 @@ route.use(express.json());
 route.use(express.urlencoded({extended: true}));
 
 const Product = require("../models/product");
+const Category = require("../models/category");
 
 route.post("/add", async (req, res, next) => {
     try{
@@ -63,6 +64,33 @@ route.get("/fetch", async (req, res, next) => {
         next(err);
     }
 });
+
+route.get("/fetchCategory", async (req, res, next) => {
+    try{
+        Category.find({}, (err, data)=>{
+            if(err)console.log(err);
+            else res.status(200).send(data);
+        })
+    }
+    catch(err){
+        console.log(err);
+        next(err);
+    }
+});
+
+route.get("/makeCategories/:categ", async (req, res, next) => {
+    try{    
+        const category = req.params.categ;
+
+        const newCateg = { name: category }
+        await Category.create(newCateg);
+        res.send("Successful");
+    }
+    catch(err){
+        console.log(err);
+        next(err);
+    }
+})
 
 
 
