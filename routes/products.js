@@ -56,7 +56,7 @@ route.get("/fetch", async (req, res, next) => {
             else {
                 res.status(200).send(data);
             }
-        });
+        }).sort({price: 1});
     }
     catch(err){
         console.log(err);
