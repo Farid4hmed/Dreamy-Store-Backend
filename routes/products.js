@@ -8,6 +8,7 @@ route.use(express.urlencoded({extended: true}));
 
 const Product = require("../models/product");
 const Category = require("../models/category");
+const Company = require("../models/company");
 
 route.post("/add", async (req, res, next) => {
     try{
@@ -85,6 +86,34 @@ route.get("/makeCategories/:categ", async (req, res, next) => {
         const newCateg = { name: category }
         await Category.create(newCateg);
         res.send("Successful");
+    }
+    catch(err){
+        console.log(err);
+        next(err);
+    }
+});
+
+
+route.get("/makeCompany/:company", async (req, res, next) => {
+    try{
+        const company = req.params.company;
+
+        const newCompany = { name: company };
+        await Company.create(newCompany);
+        res.send("Successful");
+    }
+    catch(err){
+        console.log(err);
+        next(err);
+    }
+});
+
+route.get("/getCompany", async (req, res, next) => {
+    try{
+        Company.find({}, (err, data)=>{
+            if(err)console.log(err);
+            else res.status(200).send(data);
+        })
     }
     catch(err){
         console.log(err);
