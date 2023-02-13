@@ -7,8 +7,6 @@ route.use(express.json());
 route.use(express.urlencoded({extended: true}));
 
 const Product = require("../models/product");
-const Category = require("../models/category");
-const Company = require("../models/company");
 
 route.post("/add", async (req, res, next) => {
     try{
@@ -66,11 +64,19 @@ route.get("/fetch", async (req, res, next) => {
     }
 });
 
-route.get("/fetchCategory", async (req, res, next) => {
+route.get("/getColors", async (req, res, next) => {
     try{
-        Category.find({}, (err, data)=>{
+         Product.find({}, (err, data)=>{
             if(err)console.log(err);
-            else res.status(200).send(data);
+            else {
+                let colors = new Set([]);
+                data.map((product) => {
+                    product.colors.map((color) => {
+                        colors.add(color);
+                    });
+                });
+                res.status(200).send([...colors]);
+            }
         })
     }
     catch(err){
@@ -79,40 +85,56 @@ route.get("/fetchCategory", async (req, res, next) => {
     }
 });
 
-route.get("/makeCategories/:categ", async (req, res, next) => {
-    try{    
-        const category = req.params.categ;
-
-        const newCateg = { name: category }
-        await Category.create(newCateg);
-        res.send("Successful");
-    }
-    catch(err){
-        console.log(err);
-        next(err);
-    }
-});
-
-
-route.get("/makeCompany/:company", async (req, res, next) => {
+route.get("/maxPrice", async (req, res, next) => {
     try{
-        const company = req.params.company;
-
-        const newCompany = { name: company };
-        await Company.create(newCompany);
-        res.send("Successful");
-    }
-    catch(err){
-        console.log(err);
-        next(err);
-    }
-});
-
-route.get("/getCompany", async (req, res, next) => {
-    try{
-        Company.find({}, (err, data)=>{
+         Product.find({}, (err, data) => {
             if(err)console.log(err);
-            else res.status(200).send(data);
+            else {
+                let maxPrice = 0;
+                data.map((product) => {
+                    if(product.price > maxPrice)maxPrice = product.price;
+                });
+                res.send(maxPrice.toString());
+            }
+        })
+    }
+    catch(err){
+        console.log(err);
+        next(err);
+    }
+});
+
+route.get("/companies", async (req, res, next) => {
+    try{
+         Product.find({}, (err, data) => {
+            if(err)console.log(err);
+            else {
+                let companies = new Set([]);
+                data.map((product) => {
+                    companies.add(product.company);
+                });
+                res.status(200).send([...companies]);
+            }
+        })
+    }
+    catch(err){
+        console.log(err);
+        next(err);
+    }
+});
+
+route.get("/categories", async (req, res, next) => {
+    try{
+        Product.find({}, (err, data) => {
+            if(err)console.log(err);
+            else {
+                let categories = new Set([]);
+                data.map((product) => {
+                    categories.add(product.category);
+                });
+
+                res.status(200).send([...categories]);
+            }
         })
     }
     catch(err){
@@ -120,7 +142,6 @@ route.get("/getCompany", async (req, res, next) => {
         next(err);
     }
 })
-
 
 
 
